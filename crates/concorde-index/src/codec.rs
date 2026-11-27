@@ -250,9 +250,25 @@ impl<'a> Cursor<'a> {
     }
 }
 
-/// Implements [`PostingReader`] for a newtype over [`Cursor`].
+/// Defines a reader newtype over [`Cursor`] opened with a list layout, and implements
+/// [`PostingReader`] for it.
 macro_rules! posting_reader {
-    ($reader:ident) => {
+    ($(#[$doc:meta])* $reader:ident, $layout:expr) => {
+        $(#[$doc])*
+        #[derive(Clone, Debug)]
+        pub struct $reader<'a>(Cursor<'a>);
+
+        impl<'a> $reader<'a> {
+            /// Opens `data`, reading its header and skip trailer; postings decode lazily.
+            ///
+            /// # Errors
+            ///
+            /// [`CorruptPostings`] when the header or trailer is malformed.
+            pub fn new(data: &'a [u8]) -> Result<Self, CorruptPostings> {
+                Cursor::open(data, $layout).map(Self)
+            }
+        }
+
         impl PostingReader for $reader<'_> {
             fn len(&self) -> u32 {
                 self.0.count
@@ -281,39 +297,17 @@ macro_rules! posting_reader {
     };
 }
 
-/// A cursor over a list from [`encode_varint`]; every posting reports term frequency 1.
-#[derive(Clone, Debug)]
-pub struct VarintReader<'a>(Cursor<'a>);
+posting_reader!(
+    /// A cursor over a list from [`encode_varint`]; every posting reports term frequency 1.
+    VarintReader,
+    Layout::DocidsOnly
+);
 
-impl<'a> VarintReader<'a> {
-    /// Opens `data`, reading its header and skip trailer; postings decode lazily.
-    ///
-    /// # Errors
-    ///
-    /// [`CorruptPostings`] when the header or trailer is malformed.
-    pub fn new(data: &'a [u8]) -> Result<Self, CorruptPostings> {
-        Cursor::open(data, Layout::DocidsOnly).map(Self)
-    }
-}
-
-posting_reader!(VarintReader);
-
-/// A cursor over a list from [`encode_freq_varint`].
-#[derive(Clone, Debug)]
-pub struct FreqVarintReader<'a>(Cursor<'a>);
-
-impl<'a> FreqVarintReader<'a> {
-    /// Opens `data`, reading its header and skip trailer; postings decode lazily.
-    ///
-    /// # Errors
-    ///
-    /// [`CorruptPostings`] when the header or trailer is malformed.
-    pub fn new(data: &'a [u8]) -> Result<Self, CorruptPostings> {
-        Cursor::open(data, Layout::WithTf).map(Self)
-    }
-}
-
-posting_reader!(FreqVarintReader);
+posting_reader!(
+    /// A cursor over a list from [`encode_freq_varint`].
+    FreqVarintReader,
+    Layout::WithTf
+);
 
 #[cfg(test)]
 mod tests {
