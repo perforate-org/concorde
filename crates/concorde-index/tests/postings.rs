@@ -120,7 +120,7 @@ fn encoder_preconditions_are_errors() {
         EncodeError::NotIncreasing { index: 1 },
         EncodeError::TooLarge,
     ] {
-        assert!(!error.to_string().is_empty());
+        assert_ne!(error.to_string(), "");
     }
 }
 
@@ -217,7 +217,7 @@ fn damaged_payloads_fail_at_the_first_bad_read() {
         CorruptPostings::TrailerOverlap,
         CorruptPostings::BadGap { position: 1 },
     ] {
-        assert!(!error.to_string().is_empty());
+        assert_ne!(error.to_string(), "");
     }
 }
 
