@@ -1,0 +1,30 @@
+[package]
+name = "concorde-index"
+version.workspace = true
+edition.workspace = true
+description = "Inverted-index physical layer: delta-varint posting lists with term frequencies and a bi-level skip index, and a block-max pruned disjunctive top-k driver. Scores arrive from the caller."
+repository = "https://github.com/perforate-org/concorde-index"
+keywords = ["inverted-index", "postings", "search", "top-k", "no-std"]
+categories = ["data-structures", "text-processing", "no-std"]
+license = "MIT OR Apache-2.0"
+rust-version = "1.88"
+readme = "../../README.md"
+autotests = false
+
+[lints]
+workspace = true
+
+[dev-dependencies]
+expect-test = "1.5"
+proptest = "1"
+public-api = "0.52"
+rustdoc-json = "0.9"
+
+[[test]]
+name = "postings"
+
+[[test]]
+name = "topk"
+
+[[test]]
+name = "public_api"

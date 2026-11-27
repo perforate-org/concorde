@@ -1,0 +1,17 @@
+# Proofs run under Kani, not the test suite; Debug output is not behaviour.
+#
+# The rest are equivalent mutants, each with the reason no test can tell it apart:
+# - write_leb128: the low seven bits never set bit 7, so `| 0x80` and `^ 0x80` agree.
+# - Cursor::jump `>` → `>=`: landing on the cursor's own block start restores the same state.
+# - QueryList::postings: only sizes the heap's initial allocation.
+# - admit and sort_by_frontier `>` → `>=`: hits have distinct docids, so never tie; lists with
+#   equal frontiers are scored together whichever comes first.
+exclude_re = [
+    "proofs::",
+    "<impl fmt::Debug for ",
+    "replace \\| with \\^ in write_leb128",
+    "replace > with >= in Cursor<'a>::jump",
+    "QueryList<'a, R>::postings",
+    "replace > with >= in admit",
+    "replace > with >= in sort_by_frontier",
+]

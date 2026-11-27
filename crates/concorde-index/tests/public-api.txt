@@ -1,0 +1,135 @@
+pub mod concorde_index
+#[non_exhaustive] pub enum concorde_index::CorruptPostings
+pub concorde_index::CorruptPostings::BadGap
+pub concorde_index::CorruptPostings::BadGap::position: u32
+pub concorde_index::CorruptPostings::BlockCount
+pub concorde_index::CorruptPostings::BlockCount::expected: u32
+pub concorde_index::CorruptPostings::BlockCount::found: u32
+pub concorde_index::CorruptPostings::PayloadTruncated
+pub concorde_index::CorruptPostings::PayloadTruncated::offset: usize
+pub concorde_index::CorruptPostings::TrailerOverlap
+pub concorde_index::CorruptPostings::Truncated
+pub concorde_index::CorruptPostings::Truncated::len: usize
+pub concorde_index::CorruptPostings::VarintOverflow
+pub concorde_index::CorruptPostings::VarintOverflow::offset: usize
+impl core::error::Error for concorde_index::CorruptPostings
+impl core::fmt::Display for concorde_index::CorruptPostings
+pub fn concorde_index::CorruptPostings::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+#[non_exhaustive] pub enum concorde_index::EncodeError
+pub concorde_index::EncodeError::Empty
+pub concorde_index::EncodeError::Misaligned
+pub concorde_index::EncodeError::Misaligned::docids: usize
+pub concorde_index::EncodeError::Misaligned::frequencies: usize
+pub concorde_index::EncodeError::NotIncreasing
+pub concorde_index::EncodeError::NotIncreasing::index: usize
+pub concorde_index::EncodeError::TooLarge
+impl core::error::Error for concorde_index::EncodeError
+impl core::fmt::Display for concorde_index::EncodeError
+pub fn concorde_index::EncodeError::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub struct concorde_index::FreqVarintReader<'a>(_)
+impl<'a> concorde_index::FreqVarintReader<'a>
+pub fn concorde_index::FreqVarintReader<'a>::new(&'a [u8]) -> core::result::Result<Self, concorde_index::CorruptPostings>
+impl concorde_index::PostingReader for concorde_index::FreqVarintReader<'_>
+pub fn concorde_index::FreqVarintReader<'_>::advance(&mut self, u32) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::FreqVarintReader<'_>::is_empty(&self) -> bool
+pub fn concorde_index::FreqVarintReader<'_>::is_exhausted(&self) -> bool
+pub fn concorde_index::FreqVarintReader<'_>::len(&self) -> u32
+pub fn concorde_index::FreqVarintReader<'_>::next(&mut self) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::FreqVarintReader<'_>::next_step(&mut self) -> core::result::Result<core::option::Option<concorde_index::Posting>, concorde_index::CorruptPostings>
+pub fn concorde_index::FreqVarintReader<'_>::peek(&mut self) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::FreqVarintReader<'_>::pos(&self) -> u32
+pub fn concorde_index::FreqVarintReader<'_>::tf(&mut self) -> core::result::Result<core::option::Option<u8>, concorde_index::CorruptPostings>
+pub struct concorde_index::Hit
+impl concorde_index::Hit
+pub const fn concorde_index::Hit::docid(self) -> u32
+pub const fn concorde_index::Hit::score(self) -> u32
+impl core::cmp::Ord for concorde_index::Hit
+pub fn concorde_index::Hit::cmp(&self, &Self) -> core::cmp::Ordering
+impl core::cmp::PartialOrd for concorde_index::Hit
+pub fn concorde_index::Hit::partial_cmp(&self, &Self) -> core::option::Option<core::cmp::Ordering>
+pub struct concorde_index::PlainReader<'a>
+impl<'a> concorde_index::PlainReader<'a>
+pub const fn concorde_index::PlainReader<'a>::new(&'a [u32]) -> Self
+impl concorde_index::PostingReader for concorde_index::PlainReader<'_>
+pub fn concorde_index::PlainReader<'_>::advance(&mut self, u32) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::PlainReader<'_>::is_empty(&self) -> bool
+pub fn concorde_index::PlainReader<'_>::is_exhausted(&self) -> bool
+pub fn concorde_index::PlainReader<'_>::len(&self) -> u32
+pub fn concorde_index::PlainReader<'_>::next(&mut self) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::PlainReader<'_>::next_step(&mut self) -> core::result::Result<core::option::Option<concorde_index::Posting>, concorde_index::CorruptPostings>
+pub fn concorde_index::PlainReader<'_>::peek(&mut self) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::PlainReader<'_>::pos(&self) -> u32
+pub fn concorde_index::PlainReader<'_>::tf(&mut self) -> core::result::Result<core::option::Option<u8>, concorde_index::CorruptPostings>
+pub struct concorde_index::Posting
+impl concorde_index::Posting
+pub const fn concorde_index::Posting::docid(self) -> u32
+pub const fn concorde_index::Posting::new(u32, u8) -> Self
+pub const fn concorde_index::Posting::tf(self) -> u8
+pub struct concorde_index::QueryList<'a, R>
+impl<'a, R: concorde_index::PostingReader> concorde_index::QueryList<'a, R>
+pub const fn concorde_index::QueryList<'a, R>::new(R, u32, &'a [u32], &'a concorde_index::TfParts) -> Self
+pub const fn concorde_index::QueryList<'a, R>::reader(&self) -> &R
+pub struct concorde_index::TfParts(_)
+impl concorde_index::TfParts
+pub const fn concorde_index::TfParts::new([u32; 256]) -> Self
+pub fn concorde_index::TfParts::part(&self, u8) -> u32
+impl core::fmt::Debug for concorde_index::TfParts
+pub fn concorde_index::TfParts::fmt(&self, &mut core::fmt::Formatter<'_>) -> core::fmt::Result
+pub struct concorde_index::VarintReader<'a>(_)
+impl<'a> concorde_index::VarintReader<'a>
+pub fn concorde_index::VarintReader<'a>::new(&'a [u8]) -> core::result::Result<Self, concorde_index::CorruptPostings>
+impl concorde_index::PostingReader for concorde_index::VarintReader<'_>
+pub fn concorde_index::VarintReader<'_>::advance(&mut self, u32) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::VarintReader<'_>::is_empty(&self) -> bool
+pub fn concorde_index::VarintReader<'_>::is_exhausted(&self) -> bool
+pub fn concorde_index::VarintReader<'_>::len(&self) -> u32
+pub fn concorde_index::VarintReader<'_>::next(&mut self) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::VarintReader<'_>::next_step(&mut self) -> core::result::Result<core::option::Option<concorde_index::Posting>, concorde_index::CorruptPostings>
+pub fn concorde_index::VarintReader<'_>::peek(&mut self) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::VarintReader<'_>::pos(&self) -> u32
+pub fn concorde_index::VarintReader<'_>::tf(&mut self) -> core::result::Result<core::option::Option<u8>, concorde_index::CorruptPostings>
+pub const concorde_index::LOGICAL_BLOCK_SIZE: u32
+pub trait concorde_index::PostingReader
+pub fn concorde_index::PostingReader::advance(&mut self, u32) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::PostingReader::is_empty(&self) -> bool
+pub fn concorde_index::PostingReader::is_exhausted(&self) -> bool
+pub fn concorde_index::PostingReader::len(&self) -> u32
+pub fn concorde_index::PostingReader::next(&mut self) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::PostingReader::next_step(&mut self) -> core::result::Result<core::option::Option<concorde_index::Posting>, concorde_index::CorruptPostings>
+pub fn concorde_index::PostingReader::peek(&mut self) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::PostingReader::pos(&self) -> u32
+pub fn concorde_index::PostingReader::tf(&mut self) -> core::result::Result<core::option::Option<u8>, concorde_index::CorruptPostings>
+impl concorde_index::PostingReader for concorde_index::FreqVarintReader<'_>
+pub fn concorde_index::FreqVarintReader<'_>::advance(&mut self, u32) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::FreqVarintReader<'_>::is_empty(&self) -> bool
+pub fn concorde_index::FreqVarintReader<'_>::is_exhausted(&self) -> bool
+pub fn concorde_index::FreqVarintReader<'_>::len(&self) -> u32
+pub fn concorde_index::FreqVarintReader<'_>::next(&mut self) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::FreqVarintReader<'_>::next_step(&mut self) -> core::result::Result<core::option::Option<concorde_index::Posting>, concorde_index::CorruptPostings>
+pub fn concorde_index::FreqVarintReader<'_>::peek(&mut self) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::FreqVarintReader<'_>::pos(&self) -> u32
+pub fn concorde_index::FreqVarintReader<'_>::tf(&mut self) -> core::result::Result<core::option::Option<u8>, concorde_index::CorruptPostings>
+impl concorde_index::PostingReader for concorde_index::PlainReader<'_>
+pub fn concorde_index::PlainReader<'_>::advance(&mut self, u32) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::PlainReader<'_>::is_empty(&self) -> bool
+pub fn concorde_index::PlainReader<'_>::is_exhausted(&self) -> bool
+pub fn concorde_index::PlainReader<'_>::len(&self) -> u32
+pub fn concorde_index::PlainReader<'_>::next(&mut self) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::PlainReader<'_>::next_step(&mut self) -> core::result::Result<core::option::Option<concorde_index::Posting>, concorde_index::CorruptPostings>
+pub fn concorde_index::PlainReader<'_>::peek(&mut self) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::PlainReader<'_>::pos(&self) -> u32
+pub fn concorde_index::PlainReader<'_>::tf(&mut self) -> core::result::Result<core::option::Option<u8>, concorde_index::CorruptPostings>
+impl concorde_index::PostingReader for concorde_index::VarintReader<'_>
+pub fn concorde_index::VarintReader<'_>::advance(&mut self, u32) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::VarintReader<'_>::is_empty(&self) -> bool
+pub fn concorde_index::VarintReader<'_>::is_exhausted(&self) -> bool
+pub fn concorde_index::VarintReader<'_>::len(&self) -> u32
+pub fn concorde_index::VarintReader<'_>::next(&mut self) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::VarintReader<'_>::next_step(&mut self) -> core::result::Result<core::option::Option<concorde_index::Posting>, concorde_index::CorruptPostings>
+pub fn concorde_index::VarintReader<'_>::peek(&mut self) -> core::result::Result<core::option::Option<u32>, concorde_index::CorruptPostings>
+pub fn concorde_index::VarintReader<'_>::pos(&self) -> u32
+pub fn concorde_index::VarintReader<'_>::tf(&mut self) -> core::result::Result<core::option::Option<u8>, concorde_index::CorruptPostings>
+pub fn concorde_index::docid_block(u32) -> usize
+pub fn concorde_index::encode_freq_varint(&[u32], &[u32]) -> core::result::Result<alloc::vec::Vec<u8>, concorde_index::EncodeError>
+pub fn concorde_index::encode_varint(&[u32]) -> core::result::Result<alloc::vec::Vec<u8>, concorde_index::EncodeError>
+pub fn concorde_index::topk_disjunctive<R: concorde_index::PostingReader>(&mut [concorde_index::QueryList<'_, R>], usize) -> core::result::Result<alloc::vec::Vec<concorde_index::Hit>, concorde_index::CorruptPostings>
