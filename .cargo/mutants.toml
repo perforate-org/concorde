@@ -6,12 +6,20 @@
 # - QueryList::postings: only sizes the heap's initial allocation.
 # - admit and sort_by_frontier `>` → `>=`: hits have distinct docids, so never tie; lists with
 #   equal frontiers are scored together whichever comes first.
+# - Cursor::decode_fast and leb128_in: the fast path only ever declines, handing the posting to
+#   Cursor::decode_checked, which decodes it alike; declining more (`-> None`, a guard forced
+#   true, `>` → `>=` on the fifth byte, the first posting's arm, whose base `prev` is 0) changes
+#   speed, not results.
 exclude_re = [
     "proofs::",
     "<impl fmt::Debug for ",
     "replace \\| with \\^ in write_leb128",
-    "replace > with >= in Cursor<'a>::jump",
+    "replace > with >= in Cursor<'a, L>::jump",
     "QueryList<'a, R>::postings",
     "replace > with >= in admit",
     "replace > with >= in sort_by_frontier",
+    "replace Cursor<'a, L>::decode_fast -> Option<Posting> with None",
+    "delete match arm 0 in Cursor<'a, L>::decode_fast",
+    "replace match guard gap == 0 with true in Cursor<'a, L>::decode_fast",
+    "replace > with >= in leb128_in",
 ]

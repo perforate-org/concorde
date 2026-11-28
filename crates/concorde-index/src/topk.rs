@@ -12,6 +12,13 @@
 //! the earliest next block start: no document before it can qualify, since each list contributes
 //! at most its frontier block's bound to such a document. The loop allocates nothing.
 
+// Every round runs these helpers once per list and posting; left to the inliner, the driver keeps
+// some as calls and passes their `Result`s through memory.
+#![expect(
+    clippy::inline_always,
+    reason = "measured: the driver's round must inline whole"
+)]
+
 use crate::block::{docid_block, next_block_start};
 use crate::error::CorruptPostings;
 use crate::posting::PostingReader;
@@ -84,6 +91,7 @@ impl<'a, R: PostingReader> QueryList<'a, R> {
     }
 
     /// The cached frontier docid; `None` once the list is consumed.
+    #[inline(always)]
     const fn frontier(&self) -> Option<u32> {
         self.frontier
     }
@@ -94,16 +102,19 @@ impl<'a, R: PostingReader> QueryList<'a, R> {
     }
 
     /// The first docid of the block after the frontier's.
+    #[inline(always)]
     fn next_block(&self) -> Option<u32> {
         self.frontier.and_then(next_block_start)
     }
 
+    #[inline(always)]
     fn refresh(&mut self) -> Result<(), CorruptPostings> {
         self.frontier = self.reader.peek()?;
         Ok(())
     }
 
     /// The bound on any contribution in `docid`'s block.
+    #[inline(always)]
     fn bound_at(&self, docid: u32) -> u32 {
         self.block_bounds
             .get(docid_block(docid))
@@ -112,6 +123,7 @@ impl<'a, R: PostingReader> QueryList<'a, R> {
     }
 
     /// Consumes the frontier posting and returns its contribution.
+    #[inline(always)]
     fn take(&mut self) -> Result<u32, CorruptPostings> {
         let part = self
             .reader
@@ -121,6 +133,7 @@ impl<'a, R: PostingReader> QueryList<'a, R> {
         Ok(self.weight.saturating_add(part))
     }
 
+    #[inline(always)]
     fn skip_to(&mut self, target: u32) -> Result<(), CorruptPostings> {
         self.frontier = self.reader.advance(target)?;
         Ok(())
@@ -217,6 +230,7 @@ enum Threshold {
     Unbeatable,
 }
 
+#[inline(always)]
 fn threshold(heap: &BinaryHeap<Reverse<Hit>>, k: usize) -> Threshold {
     match heap.peek() {
         // Candidates arrive in docid order, so a tie with the worst hit loses: a candidate must
@@ -242,6 +256,7 @@ enum Round {
 
 /// Skips every list of `active` to the earliest next block start when no document before it
 /// can meet `threshold`.
+#[inline(always)]
 fn prune<R: PostingReader>(
     active: &mut [QueryList<'_, R>],
     threshold: Threshold,
@@ -265,6 +280,7 @@ fn prune<R: PostingReader>(
 }
 
 /// Whether the frontier-block bounds of `active` can sum to `required`.
+#[inline(always)]
 fn can_reach<R: PostingReader>(active: &[QueryList<'_, R>], required: u32) -> bool {
     let mut total = 0u32;
     for list in active {
@@ -280,6 +296,7 @@ fn can_reach<R: PostingReader>(active: &[QueryList<'_, R>], required: u32) -> bo
 
 /// Scores the smallest frontier docid of `active` (sorted, all live), consuming the postings of
 /// every list sitting on it.
+#[inline(always)]
 fn evaluate<R: PostingReader>(
     active: &mut [QueryList<'_, R>],
 ) -> Result<Option<Hit>, CorruptPostings> {
@@ -297,6 +314,7 @@ fn evaluate<R: PostingReader>(
 }
 
 /// Keeps `hit` when the heap has room or it beats the worst kept hit.
+#[inline(always)]
 fn admit(heap: &mut BinaryHeap<Reverse<Hit>>, k: usize, hit: Hit) {
     if heap.len() < k {
         heap.push(Reverse(hit));
@@ -309,6 +327,7 @@ fn admit(heap: &mut BinaryHeap<Reverse<Hit>>, k: usize, hit: Hit) {
 
 /// Restores ascending frontier order (exhausted lists first) with one stable insertion pass:
 /// after every round the lists are nearly sorted, so the pass is close to linear.
+#[inline(always)]
 fn sort_by_frontier<R: PostingReader>(lists: &mut [QueryList<'_, R>]) {
     for i in 1..lists.len() {
         let mut j = i;
@@ -322,6 +341,7 @@ fn sort_by_frontier<R: PostingReader>(lists: &mut [QueryList<'_, R>]) {
 }
 
 /// The frontier of list `index` as a sort key: exhausted is 0, docid `d` is `d + 1`.
+#[inline(always)]
 fn sort_key<R: PostingReader>(lists: &[QueryList<'_, R>], index: usize) -> u64 {
     lists
         .get(index)
